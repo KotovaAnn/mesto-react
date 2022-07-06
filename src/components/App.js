@@ -1,22 +1,18 @@
-import React from 'react';
+import { useState } from 'react';
 import Header from './Header';
 import Main from './Main';
-import Card from './Card';
 import ImagePopup from './ImagePopup';
 import PopupWithForm from './PopupWithForm';
 import Footer from './Footer';
-import { api } from '../utils/api';
+import RenderLoading from '../utils/utils';
 
 function App() {
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
-  const [userName, setUserName] = React.useState('');
-  const [userDescription, setUserDescription] = React.useState('');
-  const [userAvatar, setUserAvatar] = React.useState('');
-  const [cards, setCards] = React.useState([]);
-  const [selectedCard, setSelectedCard] = React.useState({});
-  const [isImagePopup, setImagePopup] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState({});
+  const [isImagePopup, setImagePopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   function handleCardClick(title, link) {
     setSelectedCard({title: title, link: link});
@@ -40,49 +36,34 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setImagePopup(false);
+    setIsLoading(false);
     setSelectedCard({selectedCard: ""});
   }
 
-  React.useEffect(() => {
-    api.getInfoUser()
-      .then(res => {
-        setUserName(res.name);
-        setUserDescription(res.about);
-        setUserAvatar(res.avatar);
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  }, []);
-
-  React.useEffect(() => {
-    api.getInitialCards()
-    .then(res => {
-      setCards(res);
-      })
-    .catch(err => {
-      console.log(err);
-    })
-  }, []);
+  function handleSaveButton() {
+    setIsLoading(true);
+  }
 
   return (
     
     <div className="page">
       <Header />
-      <Main userName={userName} userDescription={userDescription} userAvatar={userAvatar} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick}>  
-        <ul className="elements__group-elements">
-          {
-            cards.map((item) => {      
-              return (          
-                <Card onCardClick={handleCardClick} title={item.name} link={item.link} likes={item.likes.length} />           
-              )
-            })
-          }
-        </ul>  
-      </Main>            
+      <Main 
+        onEditProfile={handleEditProfileClick}
+        onAddPlace={handleAddPlaceClick}
+        onEditAvatar={handleEditAvatarClick}
+        onCardClick={handleCardClick}
+        />
       <Footer />
 
-      <PopupWithForm title="Редактировать профиль" name="profile-popup" buttonName="Сохранить" isOpen={isEditProfilePopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm 
+        title="Редактировать профиль" 
+        name="profile-popup" 
+        buttonName={RenderLoading(isLoading)} 
+        isOpen={isEditProfilePopupOpen} 
+        onClose={closeAllPopups}
+        onSaveButtonClick={handleSaveButton}
+        >
         <input
           id="name-input"
           className="popup__form-item popup__form-item_input_name"
@@ -107,9 +88,20 @@ function App() {
         <span className="popup__error popup__error_type_aboutself-input-error" id="aboutself-input-error"></span>
       </PopupWithForm>
 
-      <PopupWithForm title="Вы уверены?" name="delete-card" buttonName="Да"/>
+      <PopupWithForm 
+        title="Вы уверены?" 
+        name="delete-card" 
+        buttonName="Да"
+        />
 
-      <PopupWithForm title="Обновить аватар" name="edit-avatar" buttonName="Сохранить" isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm 
+        title="Обновить аватар" 
+        name="edit-avatar" 
+        buttonName={RenderLoading(isLoading)}
+        isOpen={isEditAvatarPopupOpen} 
+        onClose={closeAllPopups}
+        onSaveButtonClick={handleSaveButton}
+        >
         <input
           id="avatar-link-input"
           className="popup__form-item
@@ -122,7 +114,14 @@ function App() {
         <span className="popup__error popup__error_type_link-input-error popup__error_edit-avatar" id="avatar-link-input-error"></span>
       </PopupWithForm>
 
-      <PopupWithForm title="Новое место" name="add-element" buttonName="Сохранить" isOpen={isAddPlacePopupOpen} onClose={closeAllPopups}>
+      <PopupWithForm 
+        title="Новое место" 
+        name="add-element" 
+        buttonName={RenderLoading(isLoading)}
+        isOpen={isAddPlacePopupOpen} 
+        onClose={closeAllPopups}
+        onSaveButtonClick={handleSaveButton}
+        >
         <input
           id="title-input"
           className="popup__form-item popup__form-item_input_title"
