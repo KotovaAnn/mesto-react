@@ -30,7 +30,7 @@ export default class Api {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        avatar: linkAvatar.inputLinkAvatar
+        avatar: linkAvatar.avatar
       })
     })
     .then(this._checkResponse);
@@ -46,7 +46,7 @@ export default class Api {
     .then(this._checkResponse);
   }
 
-  editProfile(inputValues) {
+  setUserInfo(inputValues) {
     const body = inputValues;
     return fetch(`${this._url}/users/me`, {
       method: 'PATCH',
@@ -55,8 +55,8 @@ export default class Api {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: body.inputName,
-        about: body.inputAboutself
+        name: body.name,
+        about: body.about
       })
     })
     .then(this._checkResponse);
@@ -70,8 +70,8 @@ export default class Api {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: data.inputitle,
-        link: data.inputLinkPicture
+        name: data.name,
+        link: data.link
       })
     })
     .then(this._checkResponse);
@@ -86,6 +86,28 @@ export default class Api {
       }
     })
     .then(this._checkResponse);
+  }
+
+  changeLikeCardStatus(cardId, isLiked) {
+   if (isLiked === true) {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
+      method: 'PUT',
+      headers: {
+        authorization: this._token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(this._checkResponse);
+   } else {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
+      method: 'DELETE',
+      headers: {
+        authorization: this._token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(this._checkResponse);
+   }
   }
 
   likeCard(cardId) {
