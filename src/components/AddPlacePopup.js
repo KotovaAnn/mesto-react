@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import PopupWithForm from './PopupWithForm';
 
 function AddPlacePopup(props) {
@@ -9,10 +9,15 @@ function AddPlacePopup(props) {
     e.preventDefault();
     props.onSubmitButton();
     props.onUpdateCard({
-        name: inputNameRef.current.value,
-        link: inputLinkRef.current.value
+      name: inputNameRef.current.value,
+      link: inputLinkRef.current.value
     })
   }
+
+  useEffect(() => {
+    inputNameRef.current.value = "";
+    inputLinkRef.current.value = "";
+  }, [props.isOpen]);
 
   return <PopupWithForm 
     title="Новое место" 

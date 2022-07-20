@@ -43,13 +43,16 @@ function App() {
     api.changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
         setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
-    });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   function handleCardDelete(card) {
     api.removeCard(card._id)
       .then((res) => {
-        setCards(cards.filter(item => {
+        setCards((cards) => cards.filter(item => {
           if (item._id !== card._id) {
             return item;
           }
