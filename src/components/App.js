@@ -57,6 +57,9 @@ function App() {
             return item;
           }
         }))
+      })
+      .catch(err => {
+        console.log(err);
       });
   };
 
